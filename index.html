@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pulau Petualangan - Komunikasi Interpersonal</title>
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+color:#fff;
+min-height:100vh;
+background:
+linear-gradient(rgba(8,45,55,.65),rgba(12,80,70,.65)),
+url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80");
+background-size:cover;
+background-position:center;
+}
+header{
+padding:25px;text-align:center;
+background:rgba(0,0,0,.25);
+backdrop-filter:blur(5px)
+}
+h1{font-size:42px;margin:5px}
+.container{max-width:1000px;margin:auto;padding:20px}
+.card{
+background:rgba(255,255,255,.12);
+border:1px solid rgba(255,255,255,.3);
+border-radius:25px;
+padding:25px;
+margin:20px 0;
+backdrop-filter:blur(10px);
+box-shadow:0 10px 30px #0005
+}
+.timer{
+font-size:42px;
+font-weight:bold;
+color:#ffe27a;
+text-align:center
+}
+button{
+padding:13px 25px;
+border:none;
+border-radius:30px;
+background:#ffd166;
+color:#143b32;
+font-weight:bold;
+cursor:pointer;
+margin:5px
+}
+button:hover{transform:scale(1.05)}
+.area{
+display:inline-block;
+padding:18px;
+margin:8px;
+background:rgba(255,255,255,.2);
+border-radius:20px;
+cursor:pointer;
+transition:.3s
+}
+.area:hover{background:#ffd166;color:#123}
+.answer{
+display:block;
+width:100%;
+text-align:left;
+background:white;
+color:#123;
+border-radius:12px
+}
+.hidden{display:none}
+.badge{font-size:40px}
+</style>
+</head>
+<body>
+
+<header>
+<h1>🏝️ Pulau Petualangan</h1>
+<p>Ekspedisi Komunikasi Interpersonal</p>
+<button onclick="music()">🎵 Musik Petualangan</button>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h2>⏱ Misi Berlangsung</h2>
+<div class="timer" id="timer">10:00</div>
+<p id="info">Klik mulai untuk memulai ekspedisi.</p>
+<button onclick="start()">🚀 Mulai Petualangan</button>
+</div>
+
+<div class="card">
+<h2>🗺️ Peta Pulau</h2>
+<div id="map"></div>
+<h3>⭐ Skor: <span id="score">0</span></h3>
+<h3>🏆 Area: <span id="progress">0/6</span></h3>
+</div>
+
+<div id="quiz" class="card hidden">
+<h2 id="title"></h2>
+<p id="question"></p>
+<div id="answers"></div>
+</div>
+
+<div id="finish" class="card hidden"></div>
+
+</div>
+
+<audio id="audio" loop>
+<source src="https://cdn.pixabay.com/audio/2022/10/25/audio_9461f1f7b5.mp3">
+</audio>
+
+<script>
+const data=[
+["Dermaga Makna","Kunci komunikasi interpersonal adalah?",["Memahami orang lain","Berbicara sendiri","Menghindari komunikasi"],0,"⛵"],
+["Hutan Pesan","Gangguan suara disebut?",["Noise","Pesan","Efek"],0,"🌲"],
+["Teluk Ekspresi","Senyum termasuk komunikasi?",["Nonverbal","Verbal","Tulisan"],0,"💬"],
+["Jembatan Empati","Empati berarti?",["Memahami sudut pandang orang lain","Menghakimi","Mengabaikan"],0,"🤝"],
+["Bukit Tenang","Saat mendapat keluhan?",["Mendengarkan","Marah","Pergi"],0,"🌿"],
+["Mercusuar Layanan","Layanan digital perlu?",["Etika dan informasi jelas","Membagikan data","Bahasa sulit"],0,"🏰"]
+];
+
+let score=0,done=0,current=0,time=600,timerStarted=false;
+
+function start(){
+if(timerStarted)return;
+timerStarted=true;
+setInterval(()=>{
+time--;
+let m=Math.floor(time/60),s=time%60;
+timer.innerHTML=m+":"+String(s).padStart(2,"0");
+if(time<=0){gameOver()}
+},1000);
+info.innerHTML="🔥 Ekspedisi dimulai! Selesaikan semua pulau.";
+}
+
+function draw(){
+map.innerHTML="";
+data.forEach((x,i)=>{
+let b=document.createElement("div");
+b.className="area";
+b.innerHTML=x[4]+"<br>"+x[0];
+b.onclick=()=>openArea(i);
+map.appendChild(b);
+})
+}
+
+function openArea(i){
+current=i;
+quiz.classList.remove("hidden");
+title.innerHTML=data[i][4]+" "+data[i][0];
+question.innerHTML=data[i][1];
+answers.innerHTML="";
+data[i][2].forEach((a,n)=>{
+let b=document.createElement("button");
+b.className="answer";
+b.innerHTML=a;
+b.onclick=()=>check(n);
+answers.appendChild(b);
+});
+}
+
+function check(n){
+if(n==data[current][3]){
+score+=100;done++;
+document.getElementById("score").innerHTML=score;
+document.getElementById("progress").innerHTML=done+"/6";
+alert("Benar! Lencana area diperoleh 🏅");
+if(done==6)finishGame();
+}else alert("Coba lagi!");
+}
+
+function finishGame(){
+finish.classList.remove("hidden");
+finish.innerHTML="<h1>🏆 Pulau Berhasil Ditaklukkan!</h1><p>Skor akhir "+score+" poin</p><div class='badge'>🏅🏅🏅</div>";
+clearInterval();
+}
+
+function gameOver(){
+finish.classList.remove("hidden");
+finish.innerHTML="<h1>⌛ Waktu Habis</h1><p>Petualangan belum selesai.</p>";
+}
+
+function music(){
+document.getElementById("audio").play();
+}
+
+draw();
+</script>
+</body>
+</html>
